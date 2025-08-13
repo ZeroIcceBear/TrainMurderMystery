@@ -2,8 +2,6 @@ package dev.doctor4t.trainmurdermystery.client;
 
 import dev.doctor4t.ratatouille.client.util.ambience.AmbienceUtil;
 import dev.doctor4t.ratatouille.client.util.ambience.BackgroundAmbience;
-import dev.doctor4t.ratatouille.index.RatatouilleBlocks;
-import dev.doctor4t.ratatouille.index.RatatouilleSounds;
 import dev.doctor4t.trainmurdermystery.TrainMurderMystery;
 import dev.doctor4t.trainmurdermystery.client.model.TrainMurderMysteryEntityModelLayers;
 import dev.doctor4t.trainmurdermystery.client.render.block_entity.SmallDoorBlockEntityRenderer;
@@ -19,6 +17,7 @@ import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.EmptyEntityRenderer;
@@ -26,6 +25,7 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -101,8 +101,23 @@ public class TrainMurderMysteryClient implements ClientModInitializer {
         );
 
         // Ambience
-        AmbienceUtil.registerBackgroundAmbience(new BackgroundAmbience(TrainMurderMysterySounds.AMBIENT_TRAIN_INSIDE, player -> !player.clientWorld.isSkyVisible(player.getBlockPos()), 10));
-        AmbienceUtil.registerBackgroundAmbience(new BackgroundAmbience(TrainMurderMysterySounds.AMBIENT_TRAIN_OUTSIDE, player -> player.clientWorld.isSkyVisible(player.getBlockPos()), 10));
+        AmbienceUtil.registerBackgroundAmbience(new BackgroundAmbience(TrainMurderMysterySounds.AMBIENT_TRAIN_INSIDE, player -> !isSkyVisibleAdjacent(player), 20));
+        AmbienceUtil.registerBackgroundAmbience(new BackgroundAmbience(TrainMurderMysterySounds.AMBIENT_TRAIN_OUTSIDE, TrainMurderMysteryClient::isSkyVisibleAdjacent, 20));
+    }
+
+    public static boolean isSkyVisibleAdjacent(ClientPlayerEntity player) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        BlockPos playerPos = player.getBlockPos();
+        for (int x = -1; x <= 1; x+=2) {
+            for (int z = -1; z <= 1; z+=2) {
+                mutable.set(playerPos.getX() + x, playerPos.getY(), playerPos.getZ() + z);
+                if (player.clientWorld.isSkyVisible(mutable)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public static class CustomModelProvider implements ModelLoadingPlugin {
