@@ -34,7 +34,7 @@ public class LockpickItem extends Item {
             BlockPos lowerPos = state.get(SmallDoorBlock.HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
             if (world.getBlockEntity(lowerPos) instanceof SmallDoorBlockEntity entity) {
                 if (player.isSneaking()) {
-                    entity.setJammed(GameConstants.JAMMED_DOOR_TIME);
+                    entity.jam();
 
                     if (!player.isCreative()) player.getItemCooldownManager().set(this, GameConstants.LOCKPICK_JAM_COOLDOWN);
 

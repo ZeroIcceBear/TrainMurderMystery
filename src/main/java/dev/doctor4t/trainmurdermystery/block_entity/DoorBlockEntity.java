@@ -26,6 +26,7 @@ public abstract class DoorBlockEntity extends SyncingBlockEntity {
 
     private int closeCountdown = 0;
     private int jammedTime = 0;
+    private boolean blasted = false;
 
     public DoorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -39,7 +40,7 @@ public abstract class DoorBlockEntity extends SyncingBlockEntity {
     }
 
     public static <T extends DoorBlockEntity> void serverTick(World world, BlockPos pos, BlockState state, T entity) {
-        if(state.get(DoorPartBlock.OPEN)) {
+        if(state.get(DoorPartBlock.OPEN) && !entity.isBlasted()) {
             entity.setCloseCountdown(entity.getCloseCountdown()-1);
             if (entity.getCloseCountdown() <= 0) {
                 SmallDoorBlock.toggleDoor(state, world, (SmallDoorBlockEntity) entity, pos);
@@ -116,18 +117,20 @@ public abstract class DoorBlockEntity extends SyncingBlockEntity {
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         nbt.putBoolean("open", this.isOpen());
-        nbt.putString("keyName", this.getKeyName());
+        nbt.putBoolean("blasted", this.isBlasted());
         nbt.putInt("closeCountdown", this.getCloseCountdown());
         nbt.putInt("jammedTime", this.getJammedTime());
+        nbt.putString("keyName", this.getKeyName());
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         this.setOpen(nbt.getBoolean("open"));
-        this.setKeyName(nbt.getString("keyName"));
+        this.setBlasted(nbt.getBoolean("blasted"));
         this.setCloseCountdown(nbt.getInt("closeCountdown"));
         this.setJammed(nbt.getInt("jammedTime"));
+        this.setKeyName(nbt.getString("keyName"));
     }
 
     public String getKeyName() {
@@ -150,11 +153,33 @@ public abstract class DoorBlockEntity extends SyncingBlockEntity {
         this.jammedTime = time;
     }
 
+    public void jam() {
+        this.setJammed(GameConstants.JAMMED_DOOR_TIME);
+        if (this.open) {
+            this.toggle(false);
+        }
+    }
+
+    public void blast() {
+        this.setBlasted(true);
+        if (!this.open) {
+            this.toggle(false);
+        }
+    }
+
     public boolean isJammed() {
         return this.jammedTime > 0;
     }
 
     public int getJammedTime() {
         return jammedTime;
+    }
+
+    public boolean isBlasted() {
+        return blasted;
+    }
+
+    public void setBlasted(boolean blasted) {
+        this.blasted = blasted;
     }
 }

@@ -139,9 +139,17 @@ public class SmallDoorBlock extends DoorPartBlock {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         BlockPos lowerPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
         if (world.getBlockEntity(lowerPos) instanceof SmallDoorBlockEntity entity) {
+            if (entity.isBlasted()) {
+                return ActionResult.PASS;
+            }
+
             if (player.isCreative()) {
                 return open(state, world, entity, lowerPos);
             } else {
+                if (player.getMainHandStack().isOf(TrainMurderMysteryItems.REVOLVER)) {
+                    return ActionResult.PASS;
+                }
+
                 boolean requiresKey = !entity.getKeyName().isEmpty();
                 boolean hasLockpick = player.getMainHandStack().isOf(TrainMurderMysteryItems.LOCKPICK);
 
