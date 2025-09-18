@@ -16,6 +16,6 @@ public class AlwaysVisibleFrustum extends Frustum {
 
     @Override
     public boolean isVisible(Box box) {
-        return super.isVisible(box) || TMMClient.isTrainMoving();
+        return TMMClient.isTrainMoving() ? box.getCenter().getY() < 128 : super.isVisible(box);
     }
 }

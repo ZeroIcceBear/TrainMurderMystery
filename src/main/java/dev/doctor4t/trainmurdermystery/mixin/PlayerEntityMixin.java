@@ -27,9 +27,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @Shadow
-    public abstract boolean isCreative();
-
-    @Shadow
     public abstract boolean isSpectator();
 
     @ModifyReturnValue(method = "getMovementSpeed", at = @At("RETURN"))
