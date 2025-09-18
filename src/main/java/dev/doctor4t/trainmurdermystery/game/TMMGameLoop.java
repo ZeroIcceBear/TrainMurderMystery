@@ -46,9 +46,31 @@ public class TMMGameLoop {
             gameComponent = TMMComponents.GAME.get(serverWorld);
             trainComponent = TMMComponents.TRAIN.get(serverWorld);
 
+            // fade in and start game
+            if (!gameComponent.isRunning() && gameComponent.getFadeIn() >= 0) {
+                gameComponent.setFadeIn(gameComponent.getFadeIn()+1);
+
+                if (gameComponent.getFadeIn() >= TMMGameConstants.FADE_TIME) {
+                    initializeGame(serverWorld);
+                }
+            } else {
+                gameComponent.setFadeIn(gameComponent.getFadeIn()-1);
+            }
+
+            // fade out and stop game
+            if (gameComponent.isRunning() && gameComponent.getFadeOut() >= 0) {
+                gameComponent.setFadeOut(gameComponent.getFadeOut()+1);
+
+                if (gameComponent.getFadeOut() >= TMMGameConstants.FADE_TIME) {
+                    finalizeGame(serverWorld);
+                }
+            } else {
+                gameComponent.setFadeOut(gameComponent.getFadeOut()-1);
+            }
+
+            // spectator limits
             if (trainComponent.getTrainSpeed() > 0) {
                 for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-                    // spectator limits
                     if (!isPlayerAliveAndSurvival(player)) {
                         limitPlayerToBox(player, TMMGameConstants.PLAY_AREA);
                     }
@@ -56,8 +78,6 @@ public class TMMGameLoop {
             }
 
             if (gameComponent.isRunning()) {
-                gameComponent.incrementGameTime();
-
                 // kill players who fell off the train
                 for (ServerPlayerEntity player : serverWorld.getPlayers()) {
                     if (isPlayerAliveAndSurvival(player) && player.getY() < TMMGameConstants.PLAY_AREA.minY) {
@@ -84,13 +104,12 @@ public class TMMGameLoop {
                 }
 
                 // win display
-                if (winStatus != WinStatus.NONE) {
-                    for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-                        player.sendMessage(Text.translatable("game.win." + winStatus.name().toLowerCase(Locale.ROOT)), true);
-                    }
-                    gameComponent.stop();
-                }
-                stopGame(serverWorld);
+//                if (winStatus != WinStatus.NONE) {
+//                    for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+//                        player.sendMessage(Text.translatable("game.win." + winStatus.name().toLowerCase(Locale.ROOT)), true);
+//                    }
+//                    stopGame(serverWorld);
+//                }
             }
         }
     }
@@ -129,6 +148,15 @@ public class TMMGameLoop {
     }
 
     public static void startGame(ServerWorld world) {
+        TMMComponents.GAME.get(world).setFadeIn(0);
+    }
+
+    public static void stopGame(ServerWorld world) {
+        TMMComponents.GAME.get(world).setFadeOut(0);
+    }
+
+    public static void initializeGame(ServerWorld world) {
+
         TMMComponents.TRAIN.get(world).setTrainSpeed(130);
         WorldGameComponent gameComponent = TMMComponents.GAME.get(world);
 
@@ -148,6 +176,12 @@ public class TMMGameLoop {
         for (ServerPlayerEntity player : playerPool) {
             Vec3d pos = player.getPos().add(Vec3d.of(TMMGameConstants.PLAY_POS.subtract(BlockPos.ofFloored(TMMGameConstants.READY_AREA.getMinPos()))));
             player.requestTeleport(pos.getX(), pos.getY(), pos.getZ());
+        }
+
+        // teleport non playing players
+        for (ServerPlayerEntity player : world.getPlayers(serverPlayerEntity -> !isPlayerAliveAndSurvival(serverPlayerEntity))) {
+            BlockPos playPos = TMMGameConstants.PLAY_POS;
+            player.requestTeleport(playPos.getX(), playPos.getY(), playPos.getZ());
         }
 
         // limit the game to 14 players, put players 15 to n in spectator mode
@@ -252,7 +286,8 @@ public class TMMGameLoop {
         gameComponent.start();
     }
 
-    public static void stopGame(ServerWorld world) {
+    public static void finalizeGame(ServerWorld world) {
+
         TMMComponents.TRAIN.get(world).setTrainSpeed(0);
         world.setTimeOfDay(6000);
 
@@ -281,7 +316,7 @@ public class TMMGameLoop {
     }
 
     public static void killPlayer(PlayerEntity player, boolean spawnBody) {
-        player.kill();
+        if (player instanceof ServerPlayerEntity serverPlayerEntity) serverPlayerEntity.changeGameMode(GameMode.SPECTATOR);
 
         if (spawnBody) {
             PlayerBodyEntity body = TMMEntities.PLAYER_BODY.create(player.getWorld());

@@ -4,6 +4,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
 public interface TMMGameConstants {
+    // Logistics
+    int FADE_TIME = 20;
+
     // Blocks
     int DOOR_AUTOCLOSE_TIME = getInTicks(0, 5);
 

@@ -17,7 +17,8 @@ public class WorldGameComponent implements AutoSyncedComponent {
     private final World world;
 
     private boolean running = false;
-    private int gameTime = 0;
+    private int fadeIn = -1;
+    private int fadeOut = -1;
 
     private List<UUID> players = new ArrayList<>();
     private List<UUID> hitmen = new ArrayList<>();
@@ -42,16 +43,21 @@ public class WorldGameComponent implements AutoSyncedComponent {
         this.sync();
     }
 
-    public int getGameTime() {
-        return gameTime;
+    public int getFadeIn() {
+        return fadeIn;
     }
 
-    public void setGameTime(int gameTime) {
-        this.gameTime = gameTime;
+    public void setFadeIn(int getFadeIn) {
+        this.fadeIn = getFadeIn;
+        this.sync();
     }
 
-    public void incrementGameTime() {
-        this.gameTime++;
+    public int getFadeOut() {
+        return fadeOut;
+    }
+
+    public void setFadeOut(int fadeOut) {
+        this.fadeOut = fadeOut;
         this.sync();
     }
 
@@ -121,7 +127,8 @@ public class WorldGameComponent implements AutoSyncedComponent {
     public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         this.running = nbtCompound.getBoolean("Running");
 
-        this.gameTime = nbtCompound.getInt("GameTime");
+        this.fadeIn = nbtCompound.getInt("FadeIn");
+        this.fadeOut = nbtCompound.getInt("FadeOut");
 
         this.setTargets(uuidListFromNbt(nbtCompound, "Targets"));
         this.setHitmen(uuidListFromNbt(nbtCompound, "Hitmen"));
@@ -140,7 +147,8 @@ public class WorldGameComponent implements AutoSyncedComponent {
     public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         nbtCompound.putBoolean("Running", running);
 
-        nbtCompound.putInt("GameTime", gameTime);
+        nbtCompound.putInt("FadeIn", fadeIn);
+        nbtCompound.putInt("FadeOut", fadeOut);
 
         nbtCompound.put("Targets", nbtFromUuidList(getTargets()));
         nbtCompound.put("Hitmen", nbtFromUuidList(getHitmen()));

@@ -49,9 +49,7 @@ public class TMM implements ModInitializer {
 }
 
 // TODO: Add tasks (2-3 hours)
-// TODO: Add lobby (1h)
 // TODO: Nicer starting phase + UI (2h)
 // TODO: System that remembers previous roles and allows cycling of roles (3h)
 // TODO: Train chimney smoke + ringable horn?
-// TODO: Add lock to the mod
-// TODO: Game end (Amy)
+// TODO: Add doctor4t in world lock to the mod

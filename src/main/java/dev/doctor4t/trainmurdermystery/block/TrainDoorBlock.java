@@ -30,7 +30,6 @@ public class TrainDoorBlock extends SmallDoorBlock {
                 return ActionResult.PASS;
             }
 
-            System.out.println(TMMGameLoop.trainComponent.getTrainSpeed());
             if (player.isCreative() || TMMGameLoop.trainComponent.getTrainSpeed() == 0) {
                 return open(state, world, entity, lowerPos);
             } else {
