@@ -62,13 +62,14 @@ public class TMM implements ModInitializer {
 // TODO: - Change mood down effect from speed to something else (to prevent players being able to innocent each other on an easily observable change)
 
 // TORECORD: Fixing the hitman
-// TODO: Remove target system and make the win condition a kill count
-// TODO: Hitman item shop
+// TORECORD: Remove target system and make the win condition a kill count
+// TORECORD: Hitman item shop
 // TORECORD: Fixing the knife (now with a kill indicator, also show new name system to allow anyone to know player's names)
 // TORECORD: New name system shows who else is the hitman allowing them to scheme together
 // TODO: - Explosive for clumped up people (foils the grouping up cheese)
-// TODO: - Poison (poisons the next food or drink item)
-// TODO: - Scorpion (poisons the next person sleeping in the bed)
+// TORECORD: - Poison (poisons the next food or drink item)
+// TORECORD: - Scorpion (poisons the next person sleeping in the bed)
+// TORECORD: Getting food poisoned and then scorpion poisoned lowers the timer
 // TODO: - Gun with one bullet (allows the hitman to potentially pass as a detective / passenger with a gun on top of giving a ranged option)
 // TODO: - Psycho mode (wanted to have an anonymous killer originally for the horror element, this also allows the hitman to go crazy how some wanted to)
 // TODO: - Light turn off item + true darkness (increases the horror aspect + amazing scenario of lights turning off and someone being dead when they turn back on)
@@ -79,6 +80,7 @@ public class TMM implements ModInitializer {
 // TORECORD: Fixing the detective
 // TODO: Remove revolver bullet count but make detectives drop the gun on innocent kill (to prevent detectives gunning down people and giving more weight to the choice as well as offer a chance to other players to make decisions)
 // TODO: Make the detective drop the gun on killed (that the hitman cannot pick up, to prevent soft locking)
+// TODO: Remove body bags and make player corpses turn into skeletons after some time (since the detective role is no longer really a role and depends on who carries the gun, it's hard to keep the body bag item)
 
 // TORECORD: Fixing the map
 // TODO: Rearrange the train cars to prevent all POIs being separated by all the sleeping cars
@@ -91,5 +93,5 @@ public class TMM implements ModInitializer {
 
 // TORECORD: Polish
 // TODO: Train chimney smoke + ringable horn, triggers game start in lobby and end of game
-// TODO: Players collide with each other (Amy)
+// TORECORD: Players collide with each other (Amy)
 // TODO: Louder footsteps

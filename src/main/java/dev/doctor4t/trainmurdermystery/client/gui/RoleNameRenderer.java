@@ -23,9 +23,7 @@ public class RoleNameRenderer {
         if (result instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof PlayerEntity target) {
             nametagAlpha = MathHelper.lerp(tickCounter.getTickDelta(true) / 4, nametagAlpha, 1f);
             nametag = target.getDisplayName();
-            if (component.isDetective(player)) {
-                targetRole = TrainRole.DETECTIVE;
-            } else if (component.isHitman(player)) {
+            if (component.isHitman(target)) {
                 targetRole = TrainRole.HITMAN;
             } else {
                 targetRole = TrainRole.BYSTANDER;
@@ -41,9 +39,7 @@ public class RoleNameRenderer {
             context.drawTextWithShadow(renderer, nametag, -nameWidth / 2, 16, MathHelper.packRgb(1f, 1f, 1f) | ((int) (nametagAlpha * 255) << 24));
             if (component.isRunning()) {
                 var playerRole = TrainRole.BYSTANDER;
-                if (component.isDetective(player)) {
-                    playerRole = TrainRole.DETECTIVE;
-                } else if (component.isHitman(player)) {
+                if (component.isHitman(player)) {
                     playerRole = TrainRole.HITMAN;
                 }
                 if (playerRole == TrainRole.HITMAN && targetRole == TrainRole.HITMAN) {
@@ -58,7 +54,6 @@ public class RoleNameRenderer {
     }
 
     private enum TrainRole {
-        DETECTIVE,
         HITMAN,
         BYSTANDER
     }

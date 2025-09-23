@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class GameWorldComponent implements AutoSyncedComponent, ClientTickingComponent, ServerTickingComponent {
@@ -31,8 +33,9 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
     private int fade = 0;
 
     private List<UUID> hitmen = new ArrayList<>();
-    private List<UUID> detectives = new ArrayList<>();
-    private List<UUID> targets = new ArrayList<>();
+    private int killsLeft = 0;
+
+    private int ticksUntilNextResetAttempt = -1;
 
     public GameWorldComponent(World world) {
         this.world = world;
@@ -48,6 +51,20 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
 
     public void setFade(int fade) {
         this.fade = MathHelper.clamp(fade, 0, TMMGameConstants.FADE_TIME + TMMGameConstants.FADE_PAUSE);
+    }
+
+    public int getKillsLeft() {
+        return killsLeft;
+    }
+
+    public void setKillsLeft(int killsLeft) {
+        this.killsLeft = killsLeft;
+        this.sync();
+    }
+
+    public void decrementKillsLeft() {
+        this.killsLeft--;
+        this.sync();
     }
 
     public void setGameStatus(GameStatus gameStatus) {
@@ -79,54 +96,20 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
         this.hitmen = hitmen;
     }
 
-    public List<UUID> getDetectives() {
-        return this.detectives;
-    }
-
-    public void addDetective(PlayerEntity detective) {
-        addDetective(detective.getUuid());
-    }
-
-    public void addDetective(UUID detective) {
-        this.detectives.add(detective);
-    }
-
-    public void setDetectives(List<UUID> detectives) {
-        this.detectives = detectives;
-    }
-
-    public List<UUID> getTargets() {
-        return this.targets;
-    }
-
-    public void addTarget(PlayerEntity target) {
-        addTarget(target.getUuid());
-    }
-
-    public void addTarget(UUID target) {
-        this.targets.add(target);
-    }
-
-    public void setTargets(List<UUID> targets) {
-        this.targets = targets;
-    }
-
     public boolean isCivilian(@NotNull PlayerEntity player) {
-        return !this.hitmen.contains(player.getUuid()) && !this.detectives.contains(player.getUuid());
+        return !this.hitmen.contains(player.getUuid());
     }
 
     public boolean isHitman(@NotNull PlayerEntity player) {
         return this.hitmen.contains(player.getUuid());
     }
 
-    public boolean isDetective(@NotNull PlayerEntity player) {
-        return this.detectives.contains(player.getUuid());
+    public void resetHitmanList() {
+        setHitmen(new ArrayList<>());
     }
 
-    public void resetRoleLists() {
-        setDetectives(new ArrayList<>());
-        setHitmen(new ArrayList<>());
-        setTargets(new ArrayList<>());
+    public void queueTrainReset() {
+        ticksUntilNextResetAttempt = 20;
     }
 
     @Override
@@ -134,10 +117,9 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
         this.setGameStatus(GameStatus.valueOf(nbtCompound.getString("GameStatus")));
 
         this.setFade(nbtCompound.getInt("Fade"));
+        this.setKillsLeft(nbtCompound.getInt("KillsLeft"));
 
-        this.setTargets(uuidListFromNbt(nbtCompound, "Targets"));
         this.setHitmen(uuidListFromNbt(nbtCompound, "Hitmen"));
-        this.setDetectives(uuidListFromNbt(nbtCompound, "Detectives"));
     }
 
     private ArrayList<UUID> uuidListFromNbt(NbtCompound nbtCompound, String listName) {
@@ -153,10 +135,9 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
         nbtCompound.putString("GameStatus", this.gameStatus.toString());
 
         nbtCompound.putInt("Fade", fade);
+        nbtCompound.putInt("KillsLeft", killsLeft);
 
-        nbtCompound.put("Targets", nbtFromUuidList(getTargets()));
         nbtCompound.put("Hitmen", nbtFromUuidList(getHitmen()));
-        nbtCompound.put("Detectives", nbtFromUuidList(getDetectives()));
     }
 
     private NbtList nbtFromUuidList(List<UUID> list) {
@@ -175,6 +156,12 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
     @Override
     public void serverTick() {
         tickCommon();
+
+        if (ticksUntilNextResetAttempt-- == 0) {
+            if (GameFunctions.tryResetTrain((ServerWorld) this.world)) {
+                ticksUntilNextResetAttempt = 5;
+            }
+        }
 
         // TODO: Remove eventually
 //        boolean raton = false;
@@ -214,13 +201,8 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
                     }
                 }
 
-                // check hitman win condition (all targets are dead)
-                GameFunctions.WinStatus winStatus = GameFunctions.WinStatus.HITMEN;
-                for (UUID player : this.getTargets()) {
-                    if (!GameFunctions.isPlayerEliminated(serverWorld.getPlayerByUuid(player))) {
-                        winStatus = GameFunctions.WinStatus.NONE;
-                    }
-                }
+                // check hitman win condition: kill count reached
+                GameFunctions.WinStatus winStatus = killsLeft <= 0 ? GameFunctions.WinStatus.HITMEN : GameFunctions.WinStatus.NONE;
 
                 // check passenger win condition (all hitmen are dead)
                 if (winStatus == GameFunctions.WinStatus.NONE) {
@@ -233,12 +215,12 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
                 }
 
                 // win display
-//                if (winStatus != WinStatus.NONE && this.getFadeOut() < 0) {
-//                    for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-//                        player.sendMessage(Text.translatable("game.win." + winStatus.name().toLowerCase(Locale.ROOT)), true);
-//                    }
-//                    stopGame(serverWorld);
-//                }
+                if (winStatus != GameFunctions.WinStatus.NONE && this.gameStatus == GameStatus.ACTIVE) {
+                    for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+                        player.sendMessage(Text.translatable("game.win." + winStatus.name().toLowerCase(Locale.ROOT)), true);
+                    }
+                    GameFunctions.stopGame(serverWorld);
+                }
             }
         }
     }

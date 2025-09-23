@@ -37,8 +37,6 @@ public class TMMItemTooltips {
 
             addTooltipsForItem(TMMItems.BLACKOUT, 3, itemStack, tooltipList);
             addTooltipsForItem(TMMItems.DISGUISE, 3, itemStack, tooltipList);
-
-            addLetterTooltips(itemStack, tooltipList);
         });
     }
 
@@ -49,34 +47,6 @@ public class TMMItemTooltips {
             i = i != null ? i : 6;
             tooltipList.add(Text.translatable("tip." + item.getTranslationKey().substring(24) + ".rounds", i).withColor(i <= 0 ? COOLDOWN_COLOR : 0xC1CCD1));
             addTooltipsForItem(item, 2, itemStack, tooltipList);
-        }
-    }
-
-    private static void addLetterTooltips(ItemStack itemStack, List<Text> tooltipList) {
-        Item item = TMMItems.LETTER;
-        if (itemStack.isOf(item)) {
-            if (itemStack.getName().getString().equals(Text.translatable(TMMItems.LETTER.getTranslationKey()+".instructions").getString())) {
-                String tooltipString = "tip." + item.getTranslationKey().substring(24) + ".hitman.tooltip";
-
-                tooltipList.add(Text.translatable(tooltipString + "1").withColor(LETTER_COLOR));
-
-                for (UUID target : TMMClient.getTargets()) {
-                    PlayerEntity player = MinecraftClient.getInstance().world.getPlayerByUuid(target);
-
-                    UnaryOperator<Style> stylizer = style -> GameFunctions.isPlayerEliminated(player) ? style.withStrikethrough(true).withColor(0x1B8943) : style.withColor(0x8A1B29);
-                    PlayerListEntry playerListEntry = TMMClient.PLAYER_ENTRIES_CACHE.get(target);
-                    if (playerListEntry != null)
-                        tooltipList.add(Text.translatable(tooltipString + ".target", playerListEntry.getProfile().getName()).styled(stylizer));
-                }
-
-                for (int i = 2; i <= 4; i++) {
-                    tooltipList.add(Text.translatable(tooltipString + i).withColor(LETTER_COLOR));
-                }
-            } else if (itemStack.getName().getString().equals(Text.translatable(TMMItems.LETTER.getTranslationKey()+".notes").getString())) {
-                for (int i = 1; i <= 4; i++) {
-                    tooltipList.add(Text.translatable("tip." + item.getTranslationKey().substring(24) + ".detective.tooltip" + i).withColor(LETTER_COLOR));
-                }
-            }
         }
     }
 

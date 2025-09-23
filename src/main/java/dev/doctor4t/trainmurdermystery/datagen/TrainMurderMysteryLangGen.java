@@ -22,18 +22,18 @@ public class TrainMurderMysteryLangGen extends FabricLanguageProvider {
         TMMItems.registrar.generateLang(wrapperLookup, builder);
         TMMEntities.registrar.generateLang(wrapperLookup, builder);
 
-        builder.add(TMMItems.LETTER.getTranslationKey() + ".instructions", "Instructions");
-        builder.add("tip.letter.hitman.tooltip1", "Thank you for taking this job. Please eliminate the following targets:");
-        builder.add("tip.letter.hitman.tooltip.target", "- %s");
-        builder.add("tip.letter.hitman.tooltip2", "Please do so with the utmost discretion and do not get caught. Good luck.");
-        builder.add("tip.letter.hitman.tooltip3", "");
-        builder.add("tip.letter.hitman.tooltip4", "P.S.: Don't forget to use your instinct [Left Alt] and use the train's exterior to relocate.");
-
-        builder.add(TMMItems.LETTER.getTranslationKey() + ".notes", "Notes");
-        builder.add("tip.letter.detective.tooltip1", "Multiple homicides, several wealthy victims.");
-        builder.add("tip.letter.detective.tooltip2", "Have to be linked... Serial killer? Assassin? Hitman?");
-        builder.add("tip.letter.detective.tooltip3", "Potential next victims frequent travelers of the Harpy Express.");
-        builder.add("tip.letter.detective.tooltip4", "Perfect situation to corner but need to keep targets safe.");
+//        builder.add(TMMItems.LETTER.getTranslationKey() + ".instructions", "Instructions");
+//        builder.add("tip.letter.hitman.tooltip1", "Thank you for taking this job. Please eliminate the following targets:");
+//        builder.add("tip.letter.hitman.tooltip.target", "- %s");
+//        builder.add("tip.letter.hitman.tooltip2", "Please do so with the utmost discretion and do not get caught. Good luck.");
+//        builder.add("tip.letter.hitman.tooltip3", "");
+//        builder.add("tip.letter.hitman.tooltip4", "P.S.: Don't forget to use your instinct [Left Alt] and use the train's exterior to relocate.");
+//
+//        builder.add(TMMItems.LETTER.getTranslationKey() + ".notes", "Notes");
+//        builder.add("tip.letter.detective.tooltip1", "Multiple homicides, several wealthy victims.");
+//        builder.add("tip.letter.detective.tooltip2", "Have to be linked... Serial killer? Assassin? Hitman?");
+//        builder.add("tip.letter.detective.tooltip3", "Potential next victims frequent travelers of the Harpy Express.");
+//        builder.add("tip.letter.detective.tooltip4", "Perfect situation to corner but need to keep targets safe.");
 
         builder.add(TMMItems.LETTER.getTranslationKey() + ".pamphlet", "Pamphlet");
         builder.add("tip.letter.pamphlet.name", "Dear %s, welcome aboard the Harpy Express!");
@@ -76,8 +76,8 @@ public class TrainMurderMysteryLangGen extends FabricLanguageProvider {
         builder.add("tip.disguise.tooltip2", "Activated instantly on purchase");
         builder.add("tip.disguise.tooltip3", "More placeholder text");
 
-        builder.add("game.win.hitmen", "All targets were eliminated: The Hitmen win!");
-        builder.add("game.win.passengers", "All hitmen were eliminated: The Passengers win!");
+        builder.add("game.win.hitmen", "The hitmen reached their kill count, they win!");
+        builder.add("game.win.passengers", "All hitmen were eliminated: the passengers win!");
 
         builder.add("key.trainmurdermystery.instinct", "Instinct");
         builder.add("category.trainmurdermystery.keybinds", "Train Murder Mystery");

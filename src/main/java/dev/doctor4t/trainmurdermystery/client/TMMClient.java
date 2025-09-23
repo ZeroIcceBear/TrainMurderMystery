@@ -325,18 +325,6 @@ public class TMMClient implements ClientModInitializer {
         return gameComponent.getHitmen().contains(MinecraftClient.getInstance().player.getUuid());
     }
 
-    public static boolean isDetective() {
-        return gameComponent.getDetectives().contains(MinecraftClient.getInstance().player.getUuid());
-    }
-
-    public static boolean isPassenger() {
-        return !isHitman() && !isDetective();
-    }
-
-    public static List<UUID> getTargets() {
-        return gameComponent.getTargets();
-    }
-
     public static boolean shouldInstinctHighlight(Entity entityToHighlight) {
         return isInstinctEnabled() && entityToHighlight instanceof PlayerEntity player && GameFunctions.isPlayerAliveAndSurvival(player);
     }

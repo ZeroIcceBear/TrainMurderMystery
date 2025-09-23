@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 public class WorldRendererMixin {
     @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getTeamColorValue()I"))
     public int render(int original, @Local Entity entity) {
-        return TMMClient.getTargets().contains(entity.getUuid()) ? Colors.RED : original;
+        return TMMClient.gameComponent.getHitmen().contains(entity.getUuid()) ? Colors.RED : original;
     }
 }

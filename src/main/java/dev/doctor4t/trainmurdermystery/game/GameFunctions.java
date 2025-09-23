@@ -1,9 +1,9 @@
 package dev.doctor4t.trainmurdermystery.game;
 
 import com.google.common.collect.Lists;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.doctor4t.trainmurdermystery.TMM;
 import dev.doctor4t.trainmurdermystery.cca.*;
 import dev.doctor4t.trainmurdermystery.entity.PlayerBodyEntity;
 import dev.doctor4t.trainmurdermystery.index.TMMEntities;
@@ -13,7 +13,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -91,6 +90,7 @@ public class GameFunctions {
     public static void initializeGame(ServerWorld world) {
         TrainWorldComponent trainComponent = TMMComponents.TRAIN.get(world);
         trainComponent.setTrainSpeed(130);
+        WorldBlackoutComponent.KEY.get(world).reset();
         GameWorldComponent gameComponent = TMMComponents.GAME.get(world);
 
         world.getGameRules().get(GameRules.KEEP_INVENTORY).set(true, world.getServer());
@@ -129,23 +129,23 @@ public class GameFunctions {
             playerPool.removeFirst();
         }
 
-        List<ServerPlayerEntity> rolePlayerPool = new ArrayList<>(playerPool);
+        List<ServerPlayerEntity> nonHitmen = new ArrayList<>(playerPool);
 
         // clear items, clear previous game data
-        for (ServerPlayerEntity serverPlayerEntity : rolePlayerPool) {
+        for (ServerPlayerEntity serverPlayerEntity : nonHitmen) {
             serverPlayerEntity.getInventory().clear();
             PlayerMoodComponent.KEY.get(serverPlayerEntity).reset();
             PlayerStoreComponent.KEY.get(serverPlayerEntity).reset();
             PlayerPoisonComponent.KEY.get(serverPlayerEntity).reset();
         }
-        gameComponent.resetRoleLists();
+        gameComponent.resetHitmanList();
 
         // select hitmen
-        int hitmanCount = (int) Math.floor(rolePlayerPool.size() * .2f);
-        Collections.shuffle(rolePlayerPool);
+        int hitmanCount = (int) Math.floor(nonHitmen.size() * .2f);
+        Collections.shuffle(nonHitmen);
         for (int i = 0; i < hitmanCount; i++) {
-            ServerPlayerEntity player = rolePlayerPool.getFirst();
-            rolePlayerPool.removeFirst();
+            ServerPlayerEntity player = nonHitmen.getFirst();
+            nonHitmen.removeFirst();
             player.giveItemStack(new ItemStack(TMMItems.KNIFE));
             player.giveItemStack(new ItemStack(TMMItems.LOCKPICK));
 
@@ -156,29 +156,15 @@ public class GameFunctions {
             gameComponent.addHitman(player);
         }
 
-        // select detectives
-        int detectiveCount = hitmanCount;
-        Collections.shuffle(rolePlayerPool);
-        for (int i = 0; i < detectiveCount; i++) {
-            ServerPlayerEntity player = rolePlayerPool.getFirst();
-            rolePlayerPool.removeFirst();
+        // set the kill left count as the percentage of players that are not hitmen that need to be killed in order to achieve a win
+        gameComponent.setKillsLeft((int) (nonHitmen.size() * TMMGameConstants.KILL_COUNT_PERCENTAGE));
+
+        // give the guns to random players
+        Collections.shuffle(nonHitmen);
+        for (int i = 0; i < hitmanCount; i++) {
+            ServerPlayerEntity player = nonHitmen.getFirst();
+            nonHitmen.removeFirst();
             player.giveItemStack(new ItemStack(TMMItems.REVOLVER));
-            player.giveItemStack(new ItemStack(TMMItems.BODY_BAG));
-
-            ItemStack letter = new ItemStack(TMMItems.LETTER);
-            letter.set(DataComponentTypes.ITEM_NAME, Text.translatable(letter.getTranslationKey() + ".notes"));
-            player.giveItemStack(letter);
-
-            gameComponent.addDetective(player);
-        }
-
-        // select targets
-        int targetCount = rolePlayerPool.size() / 2;
-        Collections.shuffle(rolePlayerPool);
-        for (int i = 0; i < targetCount; i++) {
-            ServerPlayerEntity player = rolePlayerPool.getFirst();
-            rolePlayerPool.removeFirst();
-            gameComponent.addTarget(player);
         }
 
         // select rooms
@@ -217,11 +203,7 @@ public class GameFunctions {
         }
 
         // reset train
-        try {
-            resetTrain(world);
-        } catch (CommandSyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        tryResetTrain(world);
 
         gameComponent.setGameStatus(GameWorldComponent.GameStatus.ACTIVE);
         trainComponent.setTime(0);
@@ -229,16 +211,13 @@ public class GameFunctions {
     }
 
     public static void finalizeGame(ServerWorld world) {
+        WorldBlackoutComponent.KEY.get(world).reset();
         TrainWorldComponent trainComponent = TMMComponents.TRAIN.get(world);
         trainComponent.setTrainSpeed(0);
         world.setTimeOfDay(6000);
 
         // reset train
-        try {
-            resetTrain(world);
-        } catch (CommandSyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        tryResetTrain(world);
 
         // discard all player bodies
         for (var body : world.getEntitiesByType(TMMEntities.PLAYER_BODY, playerBodyEntity -> true)) body.discard();
@@ -258,7 +237,7 @@ public class GameFunctions {
 
         // reset game component
         var gameComponent = TMMComponents.GAME.get(world);
-        gameComponent.resetRoleLists();
+        gameComponent.resetHitmanList();
         gameComponent.setGameStatus(GameWorldComponent.GameStatus.INACTIVE);
         trainComponent.setTime(0);
         gameComponent.sync();
@@ -282,6 +261,9 @@ public class GameFunctions {
             body.setHeadYaw(player.getHeadYaw());
             player.getWorld().spawnEntity(body);
         }
+
+        GameWorldComponent gameWorldComponent = TMMComponents.GAME.get(player.getWorld());
+        if (gameWorldComponent.isCivilian(player)) gameWorldComponent.decrementKillsLeft();
     }
 
     public static boolean isPlayerAliveAndSurvival(PlayerEntity player) {
@@ -310,31 +292,19 @@ public class GameFunctions {
         }
     }
 
-    private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.clone.overlap"));
-    private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-            (maxCount, count) -> Text.stringifiedTranslatable("commands.clone.toobig", maxCount, count)
-    );
-    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.clone.failed"));
-    public static final Predicate<CachedBlockPosition> IS_AIR_PREDICATE = pos -> !pos.getBlockState().isAir();
+    // returns whether another reset should be attempted
+    public static boolean tryResetTrain(ServerWorld serverWorld) {
+        if (serverWorld.getServer().getOverworld().equals(serverWorld)) {
+            BlockPos backupMinPos = BlockPos.ofFloored(TMMGameConstants.BACKUP_TRAIN_LOCATION.getMinPos());
+            BlockPos backupMaxPos = BlockPos.ofFloored(TMMGameConstants.BACKUP_TRAIN_LOCATION.getMaxPos());
+            BlockBox backupTrainBox = BlockBox.create(backupMinPos, backupMaxPos);
+            BlockPos trainMinPos = BlockPos.ofFloored(TMMGameConstants.TRAIN_LOCATION.getMinPos());
+            BlockPos trainMaxPos = trainMinPos.add(backupTrainBox.getDimensions());
+            BlockBox trainBox = BlockBox.create(trainMinPos, trainMaxPos);
 
-    public static void resetTrain(ServerWorld serverWorld) throws CommandSyntaxException {
-        BlockPos backupMinPos = BlockPos.ofFloored(TMMGameConstants.BACKUP_TRAIN_LOCATION.getMinPos());
-        BlockPos backupMaxPos = BlockPos.ofFloored(TMMGameConstants.BACKUP_TRAIN_LOCATION.getMaxPos());
-        BlockBox backupTrainBox = BlockBox.create(backupMinPos, backupMaxPos);
-        BlockPos trainMinPos = BlockPos.ofFloored(TMMGameConstants.TRAIN_LOCATION.getMinPos());
-        BlockPos trainMaxPos = trainMinPos.add(backupTrainBox.getDimensions());
-        BlockBox trainBox = BlockBox.create(trainMinPos, trainMaxPos);
+            Mode mode = Mode.FORCE;
 
-        Mode mode = Mode.FORCE;
-
-        if (!mode.allowsOverlap() && trainBox.intersects(backupTrainBox)) {
-            throw OVERLAP_EXCEPTION.create();
-        } else {
-            int i = backupTrainBox.getBlockCountX() * backupTrainBox.getBlockCountY() * backupTrainBox.getBlockCountZ();
-            int j = serverWorld.getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
-            if (i > j) {
-                throw TOO_BIG_EXCEPTION.create(j, i);
-            } else if (serverWorld.isRegionLoaded(backupMinPos, backupMaxPos) && serverWorld.isRegionLoaded(trainMinPos, trainMaxPos)) {
+            if (serverWorld.isRegionLoaded(backupMinPos, backupMaxPos) && serverWorld.isRegionLoaded(trainMinPos, trainMaxPos)) {
                 List<BlockInfo> list = Lists.newArrayList();
                 List<BlockInfo> list2 = Lists.newArrayList();
                 List<BlockInfo> list3 = Lists.newArrayList();
@@ -418,25 +388,26 @@ public class GameFunctions {
 
                 serverWorld.getBlockTickScheduler().scheduleTicks(serverWorld.getBlockTickScheduler(), backupTrainBox, blockPos5);
                 if (mx == 0) {
-                    throw FAILED_EXCEPTION.create();
-                } else {
-//                    for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-//                        player.sendMessage(Text.translatable("commands.clone.success", mx));
-//                    }
+                    TMM.LOGGER.info("Train reset failed: No blocks copied. Queueing another attempt.");
+                    return true;
                 }
             } else {
-                throw BlockPosArgumentType.UNLOADED_EXCEPTION.create();
+                TMM.LOGGER.info("Train reset failed: Clone positions not loaded. Queueing another attempt.");
+                return true;
             }
-        }
 
-        // discard all player bodies and items
-        for (PlayerBodyEntity body : serverWorld.getEntitiesByType(TMMEntities.PLAYER_BODY, playerBodyEntity -> true)) {
-            body.discard();
-        }
-        for (ItemEntity item : serverWorld.getEntitiesByType(EntityType.ITEM, playerBodyEntity -> true)) {
-            item.discard();
-        }
+            // discard all player bodies and items
+            for (PlayerBodyEntity body : serverWorld.getEntitiesByType(TMMEntities.PLAYER_BODY, playerBodyEntity -> true)) {
+                body.discard();
+            }
+            for (ItemEntity item : serverWorld.getEntitiesByType(EntityType.ITEM, playerBodyEntity -> true)) {
+                item.discard();
+            }
 
+            TMM.LOGGER.info("Train reset successful.");
+            return false;
+        }
+        return false;
     }
 
     public enum WinStatus {

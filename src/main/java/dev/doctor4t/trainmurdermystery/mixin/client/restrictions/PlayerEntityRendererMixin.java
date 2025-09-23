@@ -14,8 +14,5 @@ import org.spongepowered.asm.mixin.Mixin;
 public class PlayerEntityRendererMixin {
     @WrapMethod(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IF)V")
     protected void tmm$disableNameTags(AbstractClientPlayerEntity abstractClientPlayerEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f, Operation<Void> original) {
-        if (TMMClient.isInstinctEnabled()) {
-            original.call(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i, f);
-        }
     }
 }

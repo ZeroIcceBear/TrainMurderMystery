@@ -30,11 +30,13 @@ public interface TMMGameConstants {
     // Sprint
     int MAX_SPRINTING_TICKS = getInTicks(0, 10);
 
+    // Kill count
+    float KILL_COUNT_PERCENTAGE = .5f;
+
     // Game areas
     Box READY_AREA = new Box(-981, -1, -364, -813, 3, -358);
     BlockPos PLAY_POS = new BlockPos(-19, 122, -539);
     Consumer<ServerPlayerEntity> SPECTATOR_TP = serverPlayerEntity -> serverPlayerEntity.teleport(serverPlayerEntity.getServerWorld(), -68 ,133, -535.5, -90, 15);
-
     Box PLAY_AREA = new Box(-140, 118, -535.5f - 15, 230, 200, -535.5f + 15);
     Box BACKUP_TRAIN_LOCATION = new Box(-57, 64, -531, 177, 74, -540);
     Box TRAIN_LOCATION = BACKUP_TRAIN_LOCATION.offset(0, 55, 0);
@@ -76,6 +78,8 @@ public interface TMMGameConstants {
                 }
             }
     );
+    int BLACKOUT_MIN_DURATION = getInTicks(0, 10);
+    int BLACKOUT_MAX_DURATION = getInTicks(0, 12);
 
     static int getInTicks(int minutes, int seconds) {
         return (minutes * 60 + seconds) * 20;
