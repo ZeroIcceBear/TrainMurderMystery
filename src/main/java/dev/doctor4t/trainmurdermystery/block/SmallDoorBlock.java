@@ -156,6 +156,7 @@ public class SmallDoorBlock extends DoorPartBlock {
                 if (entity.isOpen()) {
                     return open(state, world, entity, lowerPos);
                 } else if (requiresKey) {
+                    if (player.getMainHandStack().isOf(TMMItems.CROWBAR)) return ActionResult.FAIL;
                     if (player.getMainHandStack().isOf(TMMItems.KEY) || hasLockpick) {
                         LoreComponent lore = player.getMainHandStack().get(DataComponentTypes.LORE);
                         boolean isRightKey = lore != null && !lore.lines().isEmpty() && lore.lines().getFirst().getString().equals(entity.getKeyName());

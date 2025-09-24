@@ -30,6 +30,7 @@ public interface TMMSounds {
     SoundEvent ITEM_REVOLVER_SHOOT = registrar.create("item.revolver.shoot");
     SoundEvent ITEM_REVOLVER_SPIN = registrar.create("item.revolver.spin");
     SoundEvent ITEM_BAT_HIT = registrar.create("item.bat.hit");
+    SoundEvent ITEM_CROWBAR_PRY = registrar.create("item.crowbar.pry");
 
     // Ambience
     SoundEvent AMBIENT_TRAIN_INSIDE = registrar.create("ambient.train.inside");

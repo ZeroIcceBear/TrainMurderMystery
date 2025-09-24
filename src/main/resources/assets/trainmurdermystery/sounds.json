@@ -291,6 +291,12 @@
 		],
 		"subtitle": "subtitles.item.bat.hit"
 	},
+	"item.crowbar.pry": {
+		"sounds": [
+			"trainmurdermystery:item/crowbar_pry"
+		],
+		"subtitle": "subtitles.item.crowbar.pry"
+	},
 
 	"ambient.train.inside": {
 		"sounds": [

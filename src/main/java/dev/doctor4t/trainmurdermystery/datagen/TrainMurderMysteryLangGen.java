@@ -53,6 +53,7 @@ public class TrainMurderMysteryLangGen extends FabricLanguageProvider {
         builder.add("subtitles.block.cargo_box.close", "Cargo Box closes");
         builder.add("subtitles.block.cargo_box.open", "Cargo Box opens");
         builder.add("subtitles.block.door.toggle", "Door operates");
+        builder.add("subtitles.item.crowbar.pry", "Crowbar pries door");
 
         builder.add("tip.door.locked", "This door is locked and cannot be opened.");
         builder.add("tip.door.requires_key", "This door is locked and requires a key to be opened.");
