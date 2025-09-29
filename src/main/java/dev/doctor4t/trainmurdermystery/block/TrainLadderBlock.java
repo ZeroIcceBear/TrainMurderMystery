@@ -5,8 +5,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.WorldView;
 
 public class TrainLadderBlock extends LadderBlock {
     protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 0.1, 16.0, 16.0);
@@ -26,6 +28,11 @@ public class TrainLadderBlock extends LadderBlock {
             case WEST -> WEST_SHAPE;
             default -> EAST_SHAPE;
         };
+    }
+
+    @Override
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        return true;
     }
 
 }

@@ -38,7 +38,7 @@ public class BeveragePlateBlockEntity extends BlockEntity {
 
     public static <T extends BlockEntity> void clientTick(World world, BlockPos pos, BlockState state, T t) {
         if (!(t instanceof BeveragePlateBlockEntity tray)) return;
-        if (!TMMClient.isHitman() || tray.poisoner == null) return;
+        if (!TMMClient.isKiller() || tray.poisoner == null) return;
         if (Random.createThreadSafe().nextBetween(0, 20) < 17) return;
         world.addParticle(
                 TMMParticles.POISON,

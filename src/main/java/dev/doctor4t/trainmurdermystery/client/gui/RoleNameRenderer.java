@@ -30,8 +30,8 @@ public class RoleNameRenderer {
         if (ProjectileUtil.getCollision(player, entity -> entity instanceof PlayerEntity, 2f) instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof PlayerEntity target) {
             nametagAlpha = MathHelper.lerp(tickCounter.getTickDelta(true) / 4, nametagAlpha, 1f);
             nametag = target.getDisplayName();
-            if (component.isHitman(target)) {
-                targetRole = TrainRole.HITMAN;
+            if (component.isKiller(target)) {
+                targetRole = TrainRole.KILLER;
             } else {
                 targetRole = TrainRole.BYSTANDER;
             }
@@ -48,10 +48,10 @@ public class RoleNameRenderer {
             context.drawTextWithShadow(renderer, nametag, -nameWidth / 2, 16, MathHelper.packRgb(1f, 1f, 1f) | ((int) (nametagAlpha * 255) << 24));
             if (component.isRunning()) {
                 var playerRole = TrainRole.BYSTANDER;
-                if (component.isHitman(player)) playerRole = TrainRole.HITMAN;
-                if (playerRole == TrainRole.HITMAN && targetRole == TrainRole.HITMAN) {
+                if (component.isKiller(player)) playerRole = TrainRole.KILLER;
+                if (playerRole == TrainRole.KILLER && targetRole == TrainRole.KILLER) {
                     context.getMatrices().translate(0, 20 + renderer.fontHeight, 0);
-                    var roleText = Text.literal("HITMAN COHORT");
+                    var roleText = Text.translatable("game.tip.cohort");
                     var roleWidth = renderer.getWidth(roleText);
                     context.drawTextWithShadow(renderer, roleText, -roleWidth / 2, 0, MathHelper.packRgb(1f, 0f, 0f) | ((int) (nametagAlpha * 255) << 24));
                 }
@@ -81,7 +81,7 @@ public class RoleNameRenderer {
     }
 
     private enum TrainRole {
-        HITMAN,
+        KILLER,
         BYSTANDER
     }
 }

@@ -24,15 +24,15 @@ public class TrainMurderMysteryLangGen extends FabricLanguageProvider {
         TMMEntities.registrar.generateLang(wrapperLookup, builder);
 
 //        builder.add(TMMItems.LETTER.getTranslationKey() + ".instructions", "Instructions");
-//        builder.add("tip.letter.hitman.tooltip1", "Thank you for taking this job. Please eliminate the following targets:");
-//        builder.add("tip.letter.hitman.tooltip.target", "- %s");
-//        builder.add("tip.letter.hitman.tooltip2", "Please do so with the utmost discretion and do not get caught. Good luck.");
-//        builder.add("tip.letter.hitman.tooltip3", "");
-//        builder.add("tip.letter.hitman.tooltip4", "P.S.: Don't forget to use your instinct [Left Alt] and use the train's exterior to relocate.");
+//        builder.add("tip.letter.killer.tooltip1", "Thank you for taking this job. Please eliminate the following targets:");
+//        builder.add("tip.letter.killer.tooltip.target", "- %s");
+//        builder.add("tip.letter.killer.tooltip2", "Please do so with the utmost discretion and do not get caught. Good luck.");
+//        builder.add("tip.letter.killer.tooltip3", "");
+//        builder.add("tip.letter.killer.tooltip4", "P.S.: Don't forget to use your instinct [Left Alt] and use the train's exterior to relocate.");
 //
 //        builder.add(TMMItems.LETTER.getTranslationKey() + ".notes", "Notes");
 //        builder.add("tip.letter.detective.tooltip1", "Multiple homicides, several wealthy victims.");
-//        builder.add("tip.letter.detective.tooltip2", "Have to be linked... Serial killer? Assassin? Hitman?");
+//        builder.add("tip.letter.detective.tooltip2", "Have to be linked... Serial killer? Assassin? Killer?");
 //        builder.add("tip.letter.detective.tooltip3", "Potential next victims frequent travelers of the Harpy Express.");
 //        builder.add("tip.letter.detective.tooltip4", "Perfect situation to corner but need to keep targets safe.");
 
@@ -64,7 +64,7 @@ public class TrainMurderMysteryLangGen extends FabricLanguageProvider {
         builder.add("tip.cooldown", "On cooldown: %s");
         builder.add(TextUtils.getItemTranslationKey(TMMItems.KNIFE) + ".tooltip", "Hold for a second and get close to your victim\nAfter a kill, cannot be used for 1 minute\nAttack to knock back / push a player (no cooldown)");
         builder.add(TextUtils.getItemTranslationKey(TMMItems.REVOLVER) + ".tooltip", "All it takes is five pounds of pressure\nDrops if you kill an innocent");
-        builder.add(TextUtils.getItemTranslationKey(TMMItems.GRENADE) + ".tooltip", "Explodes on impact once thrown\nGood to clear groups of people\nSingle use, 5 minute cooldown");
+        builder.add(TextUtils.getItemTranslationKey(TMMItems.GRENADE) + ".tooltip", "Explodes on impact once thrown\nGood to clear groups of people, does not affect killers\nSingle use, 5 minute cooldown");
         builder.add(TextUtils.getItemTranslationKey(TMMItems.PSYCHO_MODE) + ".tooltip", "Do you like hurting other people?\nHides your identity and allows you to go crazy with a bat for 30 seconds\nActivated instantly upon purchase, 5 minute cooldown");
         builder.add(TextUtils.getItemTranslationKey(TMMItems.POISON_VIAL) + ".tooltip", "Slip in food or drinks to poison the next pickup");
         builder.add(TextUtils.getItemTranslationKey(TMMItems.FIRECRACKER) + ".tooltip", "Detonates 30 seconds after being placed on ground\nGood to simulate gunshots and lure people");
@@ -75,8 +75,8 @@ public class TrainMurderMysteryLangGen extends FabricLanguageProvider {
         builder.add(TextUtils.getItemTranslationKey(TMMItems.BLACKOUT) + ".tooltip", "Turn off all lights aboard for up to 12 seconds\nActivated instantly on purchase, 5 minute cooldown");
         builder.add(TextUtils.getItemTranslationKey(TMMItems.NOTE) + ".tooltip", "Write a message and pin it for others to see\nSneak-use to write a message, then use on a wall or floor to place");
 
-        builder.add("game.win.hitmen", "The hitmen reached their kill count, they win!");
-        builder.add("game.win.passengers", "All hitmen were eliminated: the passengers win!");
+        builder.add("game.win.killers", "The killers reached their kill count, they win!");
+        builder.add("game.win.passengers", "All killers were eliminated: the passengers win!");
 
         builder.add("key.trainmurdermystery.instinct", "Instinct");
         builder.add("category.trainmurdermystery.keybinds", "Train Murder Mystery");
@@ -90,5 +90,6 @@ public class TrainMurderMysteryLangGen extends FabricLanguageProvider {
         builder.add("game.player.stung", "You feel something stinging you in your sleep.");
         builder.add("game.psycho_mode.time", "Psycho Mode: %s");
         builder.add("game.psycho_mode.over", "Psycho Mode Over!");
+        builder.add("game.tip.cohort", "Killer Cohort");
     }
 }

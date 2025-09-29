@@ -288,8 +288,8 @@ public class TMMClient implements ClientModInitializer {
         return GameFunctions.isPlayerAliveAndSurvival(MinecraftClient.getInstance().player);
     }
 
-    public static boolean isHitman() {
-        return gameComponent != null && gameComponent.getHitmen().contains(MinecraftClient.getInstance().player.getUuid());
+    public static boolean isKiller() {
+        return gameComponent != null && gameComponent.getKillers().contains(MinecraftClient.getInstance().player.getUuid());
     }
 
     public static boolean shouldInstinctHighlight(Entity entityToHighlight) {
@@ -297,6 +297,6 @@ public class TMMClient implements ClientModInitializer {
     }
 
     public static boolean isInstinctEnabled() {
-        return instinctKeybind.isPressed() && ((isHitman() && isPlayerAliveAndInSurvival()) || (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.isSpectator()));
+        return instinctKeybind.isPressed() && ((isKiller() && isPlayerAliveAndInSurvival()) || (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.isSpectator()));
     }
 }

@@ -16,6 +16,6 @@ public class WorldRendererMixin {
     public int render(int original, @Local Entity entity) {
         var player = MinecraftClient.getInstance().player;
         if (player == null || entity == player) return original;
-        return (TMMClient.gameComponent.getHitmen().contains(entity.getUuid()) && TMMClient.gameComponent.getHitmen().contains(player.getUuid())) ? Colors.RED : original;
+        return (TMMClient.gameComponent.getKillers().contains(entity.getUuid()) && TMMClient.gameComponent.getKillers().contains(player.getUuid())) ? Colors.RED : original;
     }
 }

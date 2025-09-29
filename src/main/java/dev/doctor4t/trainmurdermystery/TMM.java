@@ -93,7 +93,7 @@ public class TMM implements ModInitializer {
 
 // TORECORD: Fixing the mood system
 // TORECORD: Better tasks: mood goes down gradually, completing tasks is a single action to bring it back up
-//  (new task system is more meant to make players vulnerable to the hitman in a different way from splitting them up)
+//  (new task system is more meant to make players vulnerable to the killer in a different way from splitting them up)
 // TORECORD: - Get a snack from restaurant task (food platter block + food items)
 // TORECORD: - Get a drink from the bar task (drink tray block + custom drink items)
 // TORECORD: - Sleeping task requiring you to sleep for 8s
@@ -108,38 +108,38 @@ public class TMM implements ModInitializer {
 //              to prevent detectives gunning down people and giving more weight to the choice as well as offer a chance to other players to make decisions
 //              also sets mood to 0 as extra punishment
 //              Cannot be picked up by: The person who shot wrongly or killers, if you already have a revolver
-//              but then can't people force the hitman to try and pick up the gun to see if they are one? No I'll explain why later
+//              but then can't people force the killer to try and pick up the gun to see if they are one? No I'll explain why later
 // TORECORD: Revolver also has a really nice indicator if you are going to hit your target
-// TORECORD: Make the detective drop the gun on killed (that the hitman cannot pick up, to prevent soft locking)
+// TORECORD: Make the detective drop the gun on killed (that the killer cannot pick up, to prevent soft locking)
 // TORECORD: Also removed cooldown in creative LMAO
 // done: Remove body bags so make player corpses turn into skeletons after some time (since the detective role is no longer really a role and depends on who carries the gun, it's hard to keep the body bag item)
 
-// TORECORD: Fixing the hitman
-// TORECORD: Mood system shows up for the hitman as well, custom mood icon indicating no effect, but here to suggest how to play along and fake tasks
+// TORECORD: Fixing the killer
+// TORECORD: Mood system shows up for the killer as well, custom mood icon indicating no effect, but here to suggest how to play along and fake tasks
 // TORECORD: Remove target system and make the win condition a kill count, turning him into a psycho
 // TORECORD: New name display shows "psycho cohort" for other psychos, and instinct now shows other psychos instead of targets, game recognizes game, allowing them to scheme together
 // TORECORD: You'll notice the killer doesn't start with the knife or the lockpick, because ITEM SHOP. Idea is we're gonna give the killer a bunch of tools and you are free to play how you want! And there's gonna be a lot of options
 // TORECORD: - Fixing the knife (now with a kill indicator)
 // TORECORD: - Grenade for clumped up people (foils the grouping up cheese)
-//              Does not kill the hitman (idk they have shrapnel body armor or something)
+//              Does not kill the killer (idk they have shrapnel body armor or something)
 //              Detail of the thrown grenade not having the pin or the handle
 // TORECORD: - Poison (poisons the next food or drink item)
 // TORECORD: - Scorpion (poisons the next person sleeping in the bed)
 // TORECORD:    Getting food poisoned and then scorpion poisoned lowers the timer
 // TORECORD: - Revolver
-//          allows the hitman to potentially pass as a detective / passenger with a gun on top of giving a ranged option
+//          allows the killer to potentially pass as a detective / passenger with a gun on top of giving a ranged option
 //          double edged sword because just like for other passengers, you drop it when you shoot an innocent, which means that there is now one more gun in circulation people can use against you
-//          counter to people trying to make you pick up the gun and confirm you are the hitman because remember you can't pick it up if you already have a revolver
+//          counter to people trying to make you pick up the gun and confirm you are the killer because remember you can't pick it up if you already have a revolver
 //              so the killer can buy it and bluff that they already have one and use it as a justification
-// TORECORD: - Crowbar (perma opening a door should be a hitman ability, allows for creative kills where you can push off players from train doors, as well as allowing passengers to use the exterior in order to give plausible deniability to hitmen using it to relocate)
-// TORECORD: - Psycho mode (wanted to have an anonymous killer originally for the horror element, this also allows the hitman to go crazy how some wanted to)
+// TORECORD: - Crowbar (perma opening a door should be a killer ability, allows for creative kills where you can push off players from train doors, as well as allowing passengers to use the exterior in order to give plausible deniability to killers using it to relocate)
+// TORECORD: - Psycho mode (wanted to have an anonymous killer originally for the horror element, this also allows the killer to go crazy how some wanted to)
 //              Ambience can be heard by all players, so you know when to run. Also gives a use to rooms as you can hide in them
 // TORECORD: - Light turn off item + true darkness (increases the horror aspect + amazing scenario of lights turning off and someone being dead when they turn back on + blackout and psycho mode)
 //              True darkness doesn't work that well because of skylight seeping into the block, add a light barrier block that blocks it from entering
 //              Disable name renderer for the duration of the blackout to prevent people seeing in the dark
-// TORECORD: - Firecracker (luring people, shooting the gun in spectator often led to people rushing in from curiosity, allowing the hitman to manipulate players)
+// TORECORD: - Firecracker (luring people, shooting the gun in spectator often led to people rushing in from curiosity, allowing the killer to manipulate players)
 // TORECORD: - Body bag (can be used to clean up a kill, but very expensive)
-// TORECORD: - Note (allows the hitman to leave messages, fun for encouraging the roleplay aspect)
+// TORECORD: - Note (allows the killer to leave messages, fun for encouraging the roleplay aspect)
 
 // TORECORD: Fixing the map
 // TODO: Rearrange the train cars to prevent all POIs being separated by all the sleeping cars
@@ -149,27 +149,22 @@ public class TMM implements ModInitializer {
 // TORECORD: Polish
 // TODO: Train chimney smoke + ringable horn, triggers game start in lobby and end of game
 // TORECORD: Players collide with each other (Amy) + let's you step on them
-// TODO: Louder footsteps
 // TORECORD: System that remembers previous roles and allows cycling of roles (Amy)
 
 // TODO: Item shop sounds
-// TODO: Disable feature renderers on psychos
 // TODO: more knife knockback
-// TODO: Timer for hitman
-// TODO: Button in shower
+// TODO: Timer for killer
 // TODO: Bed at the back for 14+ players games
 // TODO: Remove loud outside ambience for spectators + shake
 // TODO: Invisible note in hand + not in psychosis pool
 // TODO: fix spectators spawning another body
 // TODO: fix sleeping inside people
-// TODO: Indicate grenade does no damage to hitmen
+// TODO: Indicate grenade does no damage to killers
 // TODO: Fix shower sound
-// TODO: Hitmen can see the mood of players
+// TODO: Killers can see the mood of players
 // TODO: Heartbeat sanity low
 // TODO: Fix poison visual not getting removed
-// TODO: Lower firecracker timer
 // TODO: Fix blackout name not disappearing
-// TODO: dofiretickfalse
 // TODO: psycho mode can shrug off one bullet
 // TODO: add barriers under ladders
 // TODO: add command to reset role weighting

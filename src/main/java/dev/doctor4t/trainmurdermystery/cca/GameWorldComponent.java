@@ -33,7 +33,7 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
     private GameStatus gameStatus = GameStatus.INACTIVE;
     private int fade = 0;
 
-    private List<UUID> hitmen = new ArrayList<>();
+    private List<UUID> killers = new ArrayList<>();
     private int killsLeft = 0;
 
     private int ticksUntilNextResetAttempt = -1;
@@ -83,32 +83,32 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
         return this.gameStatus == GameStatus.ACTIVE || this.gameStatus == GameStatus.STOPPING;
     }
 
-    public List<UUID> getHitmen() {
-        return this.hitmen;
+    public List<UUID> getKillers() {
+        return this.killers;
     }
 
-    public void addHitman(PlayerEntity hitman) {
-        this.addHitman(hitman.getUuid());
+    public void addKiller(PlayerEntity killer) {
+        this.addKiller(killer.getUuid());
     }
 
-    public void addHitman(UUID hitman) {
-        this.hitmen.add(hitman);
+    public void addKiller(UUID killer) {
+        this.killers.add(killer);
     }
 
-    public void setHitmen(List<UUID> hitmen) {
-        this.hitmen = hitmen;
+    public void setKillers(List<UUID> killers) {
+        this.killers = killers;
     }
 
     public boolean isCivilian(@NotNull PlayerEntity player) {
-        return !this.hitmen.contains(player.getUuid());
+        return !this.killers.contains(player.getUuid());
     }
 
-    public boolean isHitman(@NotNull PlayerEntity player) {
-        return this.hitmen.contains(player.getUuid());
+    public boolean isKiller(@NotNull PlayerEntity player) {
+        return this.killers.contains(player.getUuid());
     }
 
-    public void resetHitmanList() {
-        setHitmen(new ArrayList<>());
+    public void resetKillerList() {
+        setKillers(new ArrayList<>());
         setPsychosActive(0);
     }
 
@@ -137,7 +137,7 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
         this.setKillsLeft(nbtCompound.getInt("KillsLeft"));
         this.setPsychosActive(nbtCompound.getInt("PsychosActive"));
 
-        this.setHitmen(uuidListFromNbt(nbtCompound, "Hitmen"));
+        this.setKillers(uuidListFromNbt(nbtCompound, "Killers"));
     }
 
     private ArrayList<UUID> uuidListFromNbt(NbtCompound nbtCompound, String listName) {
@@ -156,7 +156,7 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
         nbtCompound.putInt("KillsLeft", killsLeft);
         nbtCompound.putInt("PsychosActive", psychosActive);
 
-        nbtCompound.put("Hitmen", nbtFromUuidList(getHitmen()));
+        nbtCompound.put("Killers", nbtFromUuidList(getKillers()));
     }
 
     private NbtList nbtFromUuidList(List<UUID> list) {
@@ -227,13 +227,13 @@ public class GameWorldComponent implements AutoSyncedComponent, ClientTickingCom
                     if (balanceToAdd > 0) PlayerShopComponent.KEY.get(player).addToBalance(balanceToAdd);
                 }
 
-                // check hitman win condition: kill count reached
+                // check killer win condition: kill count reached
                 GameFunctions.WinStatus winStatus = killsLeft <= 0 ? GameFunctions.WinStatus.HITMEN : GameFunctions.WinStatus.NONE;
 
-                // check passenger win condition (all hitmen are dead)
+                // check passenger win condition (all killers are dead)
                 if (winStatus == GameFunctions.WinStatus.NONE) {
                     winStatus = GameFunctions.WinStatus.PASSENGERS;
-                    for (UUID player : this.getHitmen()) {
+                    for (UUID player : this.getKillers()) {
                         if (!GameFunctions.isPlayerEliminated(serverWorld.getPlayerByUuid(player))) {
                             winStatus = GameFunctions.WinStatus.NONE;
                         }

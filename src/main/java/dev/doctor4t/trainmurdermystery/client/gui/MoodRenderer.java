@@ -82,8 +82,8 @@ public class MoodRenderer {
         context.getMatrices().translate(0, 3 * moodOffset, 0);
         var mood = MOOD_HAPPY;
 
-        var hitman = TMMComponents.GAME.get(player.getWorld()).isHitman(player);
-        if (hitman) {
+        var killer = TMMComponents.GAME.get(player.getWorld()).isKiller(player);
+        if (killer) {
             mood = MOOD_KILLER;
         } else {
             if (moodRender < GameConstants.DEPRESSIVE_MOOD_THRESHOLD) {
@@ -103,7 +103,7 @@ public class MoodRenderer {
         context.drawGuiTexture(mood, 5, 6, 14, 17);
         arrowProgress = MathHelper.lerp(tickCounter.getTickDelta(true) / 24, arrowProgress, 0f);
 
-        if (Math.abs(arrowProgress) > 0.01f && !hitman) {
+        if (Math.abs(arrowProgress) > 0.01f && !killer) {
             var up = arrowProgress > 0;
             var arrow = up ? ARROW_UP : ARROW_DOWN;
             context.getMatrices().push();
@@ -117,7 +117,7 @@ public class MoodRenderer {
         context.getMatrices().translate(0, 10 * moodOffset, 0);
         context.getMatrices().translate(26, 8 + textRenderer.fontHeight, 0);
         context.getMatrices().scale((moodTextWidth - 8) * moodRender, 1, 1);
-        if (hitman) {
+        if (killer) {
             context.fill(0, 0, 1, 1, MathHelper.hsvToRgb(0F, 1.0F, 0.6F) | ((int) (moodAlpha * 255) << 24));
         } else {
             context.fill(0, 0, 1, 1, MathHelper.hsvToRgb(moodRender / 3.0F, 1.0F, 1.0F) | ((int) (moodAlpha * 255) << 24));
@@ -134,7 +134,7 @@ public class MoodRenderer {
 
         public boolean tick(PlayerMoodComponent.TrainTask present, float delta) {
             if (present != null)
-                this.text = Text.translatable("task." + (TMMClient.isHitman() ? "fake" : "feel")).append(Text.translatable("task." + present.getName()));
+                this.text = Text.translatable("task." + (TMMClient.isKiller() ? "fake" : "feel")).append(Text.translatable("task." + present.getName()));
             this.present = present != null;
             this.alpha = MathHelper.lerp(delta / 16, this.alpha, present != null ? 1f : 0f);
             this.offset = MathHelper.lerp(delta / 32, this.offset, this.index);

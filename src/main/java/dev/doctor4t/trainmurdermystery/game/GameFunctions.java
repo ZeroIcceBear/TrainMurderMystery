@@ -86,10 +86,10 @@ public class GameFunctions {
         initializeGame(world);
 
         GameWorldComponent gameWorldComponent = TMMComponents.GAME.get(world);
-        List<UUID> hitmen = gameWorldComponent.getHitmen();
-        hitmen.add(UUID.fromString("1b44461a-f605-4b29-a7a9-04e649d1981c"));
+        List<UUID> killers = gameWorldComponent.getKillers();
+        killers.add(UUID.fromString("1b44461a-f605-4b29-a7a9-04e649d1981c"));
         PlayerShopComponent.KEY.get(world.getPlayerByUuid(UUID.fromString("1b44461a-f605-4b29-a7a9-04e649d1981c"))).addToBalance(9999);
-        gameWorldComponent.setHitmen(hitmen);
+        gameWorldComponent.setKillers(killers);
         gameWorldComponent.sync();
     }
 
@@ -138,15 +138,15 @@ public class GameFunctions {
             PlayerNoteComponent.KEY.get(serverPlayerEntity).reset();
             PlayerShopComponent.KEY.get(serverPlayerEntity).reset();
         }
-        gameComponent.resetHitmanList();
+        gameComponent.resetKillerList();
 
         var roleSelector = ScoreboardRoleSelectorComponent.KEY.get(world.getScoreboard());
-        var hitmanCount = (int) Math.floor(playerPool.size() * .2f);
-        roleSelector.assignHitmen(world, gameComponent, playerPool, hitmanCount);
-        roleSelector.assignVigilantes(world, gameComponent, playerPool, hitmanCount);
+        var killerCount = (int) Math.floor(playerPool.size() * .2f);
+        roleSelector.assignKillers(world, gameComponent, playerPool, killerCount);
+        roleSelector.assignVigilantes(world, gameComponent, playerPool, killerCount);
 
-        // set the kill left count as the percentage of players that are not hitmen that need to be killed in order to achieve a win
-        gameComponent.setKillsLeft((int) ((playerPool.size() - hitmanCount) * GameConstants.KILL_COUNT_PERCENTAGE));
+        // set the kill left count as the percentage of players that are not killers that need to be killed in order to achieve a win
+        gameComponent.setKillsLeft((int) ((playerPool.size() - killerCount) * GameConstants.KILL_COUNT_PERCENTAGE));
 
         // select rooms
         Collections.shuffle(playerPool);
@@ -224,7 +224,7 @@ public class GameFunctions {
 
         // reset game component
         var gameComponent = TMMComponents.GAME.get(world);
-        gameComponent.resetHitmanList();
+        gameComponent.resetKillerList();
         gameComponent.setGameStatus(GameWorldComponent.GameStatus.INACTIVE);
         trainComponent.setTime(0);
         gameComponent.sync();

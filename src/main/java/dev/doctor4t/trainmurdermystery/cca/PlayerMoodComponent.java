@@ -141,11 +141,11 @@ public class PlayerMoodComponent implements AutoSyncedComponent, ServerTickingCo
     }
 
     public float getMood() {
-        return TMMComponents.GAME.get(player.getWorld()).isHitman(player) ? 1 : this.mood;
+        return TMMComponents.GAME.get(player.getWorld()).isKiller(player) ? 1 : this.mood;
     }
 
     public void setMood(float mood) {
-        this.mood = TMMComponents.GAME.get(player.getWorld()).isHitman(player) ? 1 : Math.clamp(mood, 0, 1);
+        this.mood = TMMComponents.GAME.get(player.getWorld()).isKiller(player) ? 1 : Math.clamp(mood, 0, 1);
     }
 
     public void eatFood() {
