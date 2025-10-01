@@ -2,7 +2,6 @@ package dev.doctor4t.trainmurdermystery.cca;
 
 import dev.doctor4t.trainmurdermystery.TMM;
 import dev.doctor4t.trainmurdermystery.index.TMMItems;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -31,9 +30,11 @@ public class ScoreboardRoleSelectorComponent implements AutoSyncedComponent {
         this.server = server;
     }
 
-    public void reset() {
+    public int reset() {
+        var count = this.killerRounds.size() + this.vigilanteRounds.size();
         this.killerRounds.clear();
         this.vigilanteRounds.clear();
+        return count;
     }
 
     public void assignKillers(ServerWorld world, GameWorldComponent gameComponent, @NotNull List<ServerPlayerEntity> players, int killerCount) {
