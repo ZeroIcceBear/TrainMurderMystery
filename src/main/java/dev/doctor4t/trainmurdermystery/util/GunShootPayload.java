@@ -9,9 +9,7 @@ import dev.doctor4t.trainmurdermystery.index.TMMItems;
 import dev.doctor4t.trainmurdermystery.index.TMMSounds;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -37,7 +35,6 @@ public record GunShootPayload(int target) implements CustomPayload {
             if (player.getServerWorld().getEntityById(payload.target()) instanceof PlayerEntity target && target.distanceTo(player) < 65.0) {
                 var game = TMMComponents.GAME.get(player.getWorld());
                 if (game.isCivilian(target) && !player.isCreative()) {
-                    PlayerMoodComponent.KEY.get(player).setMood(0);
                     Scheduler.schedule(() -> {
                         player.getInventory().remove((s) -> s.isOf(revolver), 1, player.getInventory());
                         var item = player.dropItem(revolver.getDefaultStack(), false, false);
@@ -46,6 +43,7 @@ public record GunShootPayload(int target) implements CustomPayload {
                             item.setThrower(player);
                         }
                         ServerPlayNetworking.send(player, new GunDropPayload());
+                        PlayerMoodComponent.KEY.get(player).setMood(0);
                     }, 4);
                 }
                 GameFunctions.killPlayer(target, true, player);
