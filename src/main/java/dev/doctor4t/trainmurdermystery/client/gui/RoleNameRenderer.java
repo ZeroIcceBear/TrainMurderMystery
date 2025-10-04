@@ -16,6 +16,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.LightType;
 import org.jetbrains.annotations.NotNull;
 
 public class RoleNameRenderer {
@@ -27,7 +28,7 @@ public class RoleNameRenderer {
 
     public static void renderHud(TextRenderer renderer, @NotNull ClientPlayerEntity player, DrawContext context, RenderTickCounter tickCounter) {
         var component = TMMComponents.GAME.get(player.getWorld());
-        if (player.getWorld().getLightLevel(BlockPos.ofFloored(player.getEyePos())) < 3) return;
+        if (player.getWorld().getLightLevel(LightType.BLOCK, BlockPos.ofFloored(player.getEyePos())) < 3 && player.getWorld().getLightLevel(LightType.SKY, BlockPos.ofFloored(player.getEyePos())) < 10) return;
         var range = GameFunctions.isPlayerSpectatingOrCreative(player) ? 8f : 2f;
         if (ProjectileUtil.getCollision(player, entity -> entity instanceof PlayerEntity, range) instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof PlayerEntity target) {
             nametagAlpha = MathHelper.lerp(tickCounter.getTickDelta(true) / 4, nametagAlpha, 1f);
