@@ -25,6 +25,8 @@
     "client.GameRendererMixin",
     "client.MinecraftClientMixin",
     "client.PlayerEntityRendererMixin",
+    "client.ResourceTextureMixin",
+    "client.ResourceTextureMixin$TextureDataMixin",
     "client.TrueDarknessLightmapTextureManagerMixin",
     "client.items.BipedEntityModelMixin",
     "client.items.ClientPlayerEntityMixin",

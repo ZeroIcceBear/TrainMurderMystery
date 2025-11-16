@@ -45,11 +45,11 @@ public class InGameHudMixin {
             MoodRenderer.renderHud(player, renderer, context, tickCounter);
             RoleNameRenderer.renderHud(renderer, player, context, tickCounter);
             RoundTextRenderer.renderHud(renderer, player, context);
-            if (MinecraftClient.getInstance().currentScreen == null)
-                StoreRenderer.renderHud(renderer, player, context, tickCounter.getTickDelta(true));
+            if (MinecraftClient.getInstance().currentScreen == null) StoreRenderer.renderHud(renderer, player, context, tickCounter.getTickDelta(true));
             TimeRenderer.renderHud(renderer, player, context, tickCounter.getTickDelta(true));
             LobbyPlayersRenderer.renderHud(renderer, player, context);
         }
+        GameRenderer.renderHud(context);
     }
 
     @WrapMethod(method = "renderCrosshair")
