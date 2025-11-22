@@ -298,7 +298,7 @@ public class GameWorldComponent implements AutoSyncedComponent, ServerTickingCom
         // if not running and spectators or not in lobby reset them
         if (world.getTime() % 20 == 0) {
             for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-                if (!isRunning() && (player.isSpectator() && serverWorld.getServer().getPermissionLevel(player.getGameProfile()) >= 2 || (GameFunctions.isPlayerAliveAndSurvival(player) && GameConstants.PLAY_AREA.contains(player.getPos())))) {
+                if (!isRunning() && (player.isSpectator() && serverWorld.getServer().getPermissionLevel(player.getGameProfile()) < 2 || (GameFunctions.isPlayerAliveAndSurvival(player) && GameConstants.PLAY_AREA.contains(player.getPos())))) {
                     GameFunctions.resetPlayer(player);
                 }
             }
